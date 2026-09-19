@@ -64,10 +64,53 @@ const testimonials = [
 function App() {
   const [showIntro, setShowIntro] = useState(true);
   const [submitted, setSubmitted] = useState(false);
+  const [activeDepartment, setActiveDepartment] = useState(0);
+  const [activeFacility, setActiveFacility] = useState(0);
+  const [scrollDirection, setScrollDirection] = useState("down");
 
   useEffect(() => {
     const introTimer = window.setTimeout(() => setShowIntro(false), 2600);
     return () => window.clearTimeout(introTimer);
+  }, []);
+
+  useEffect(() => {
+    const previousScrollY = { current: window.scrollY };
+
+    const updateActiveDepartment = () => {
+      if (window.innerWidth > 640) return;
+
+      const currentScrollY = window.scrollY;
+      if (currentScrollY !== previousScrollY.current) {
+        setScrollDirection(currentScrollY > previousScrollY.current ? "down" : "up");
+        previousScrollY.current = currentScrollY;
+      }
+
+      const focusPoint = window.innerHeight * 0.48;
+      const updateActiveCard = (selector, setActiveCard) => {
+        const cards = [...document.querySelectorAll(selector)];
+        let focusedCard = -1;
+        cards.forEach((card, index) => {
+          const { top, bottom } = card.getBoundingClientRect();
+          if (top <= focusPoint && bottom > focusPoint) focusedCard = index;
+        });
+
+        if (focusedCard >= 0) setActiveCard(focusedCard);
+      };
+
+      updateActiveCard(".department-card", setActiveDepartment);
+      updateActiveCard(".facility-card", setActiveFacility);
+    };
+
+    updateActiveDepartment();
+    window.addEventListener("scroll", updateActiveDepartment, {
+      passive: true,
+    });
+    window.addEventListener("resize", updateActiveDepartment);
+
+    return () => {
+      window.removeEventListener("scroll", updateActiveDepartment);
+      window.removeEventListener("resize", updateActiveDepartment);
+    };
   }, []);
 
   return (
@@ -219,8 +262,24 @@ function App() {
           {/* <p>One connected team, across the care you need most.</p> */}
         </div>
         <div className="department-grid">
-          {departments.map(([icon, name, description]) => (
-            <article className="department-card" key={name}>
+          {departments.map(([icon, name, description], index) => (
+            <article
+              className={`department-card ${
+                index === activeDepartment
+                  ? "is-active"
+                  : index ===
+                      activeDepartment + (scrollDirection === "up" ? -1 : 1)
+                    ? "is-next"
+                    : scrollDirection === "down"
+                      ? index < activeDepartment
+                        ? "is-passed"
+                        : "is-hidden"
+                      : index > activeDepartment
+                      ? "is-passed"
+                      : "is-hidden"
+              }`}
+              key={name}
+            >
               <span className="card-icon">{icon}</span>
               <span className="card-index">
                 0
@@ -391,8 +450,24 @@ function App() {
           </div>
         </div>
         <div className="facility-grid">
-          {facilities.map(([icon, name, description]) => (
-            <article className="facility-card" key={name}>
+          {facilities.map(([icon, name, description], index) => (
+            <article
+              className={`facility-card ${
+                index === activeFacility
+                  ? "is-active"
+                  : index ===
+                      activeFacility + (scrollDirection === "up" ? -1 : 1)
+                    ? "is-next"
+                    : scrollDirection === "down"
+                      ? index < activeFacility
+                        ? "is-passed"
+                        : "is-hidden"
+                      : index > activeFacility
+                      ? "is-passed"
+                      : "is-hidden"
+              }`}
+              key={name}
+            >
               <span className="card-icon">{icon}</span>
               <h3>{name}</h3>
               <p>{description}</p>
