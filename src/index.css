@@ -1,0 +1,4 @@
+:root { --ink: #17251f; --paper: #f7f6f1; --sage: #708772; --sage-light: #e5ece2; --muted: #68716a; --line: #dfe3dc; font-family: 'DM Sans', sans-serif; color: var(--ink); background: var(--paper); font-synthesis: none; text-rendering: optimizeLegibility; -webkit-font-smoothing: antialiased; }
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; min-width: 20rem; }
