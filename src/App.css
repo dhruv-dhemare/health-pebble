@@ -1595,6 +1595,18 @@ textarea:focus {
 
 /* Responsive layout refinements */
 @media (max-width: 64rem) {
+  .emergency-section::before,
+  .why-section::before,
+  .departments-section::before,
+  .facilities-section::before,
+  .testimonial-section::before,
+  .contact-section::before {
+    left: 50%;
+    width: 100vw;
+    max-width: none;
+    transform: translateX(-50%);
+  }
+
   .site-header {
     padding-inline: 2rem;
   }
@@ -1815,7 +1827,16 @@ textarea:focus {
     height: 3rem;
     flex: 1 1 auto;
     padding-inline: 0.5rem;
-    font-size: 0.65rem;
+    font-size: clamp(0.5rem, 2.2vw, 0.65rem);
+    white-space: nowrap;
+  }
+
+  .hero-actions .button > span {
+    margin-left: 0.25rem;
+  }
+
+  .hero-actions .button .phone-icon {
+    margin-right: 0.25rem;
   }
 
   .hero-trust {
@@ -1840,6 +1861,21 @@ textarea:focus {
   .facility-grid,
   .testimonial-grid {
     grid-template-columns: 1fr;
+  }
+
+  .testimonial-section .section-heading {
+    align-items: flex-start;
+  }
+
+  .testimonial-section .rating {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    margin-top: 1.25rem;
+  }
+
+  .testimonial-section .rating small {
+    text-align: left;
   }
 
   .why-section {
@@ -2047,6 +2083,18 @@ textarea:focus {
     height: 0.75rem;
     content: "";
     background: var(--paper);
+  }
+
+  .departments-section .section-heading::after,
+  .facilities-section .section-heading::after {
+    position: absolute;
+    z-index: -1;
+    inset: 0 auto 0 50%;
+    display: block;
+    width: 100vw;
+    content: "";
+    background: var(--paper);
+    transform: translateX(-50%);
   }
 
   .departments-section .section-heading > p,

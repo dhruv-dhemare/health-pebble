@@ -4,40 +4,40 @@ import "./App.css";
 const departments = [
   ["✚", "Cardiology", "Compassionate heart care, from prevention to recovery."],
   [
-    "◈",
+    "✚",
     "Orthopaedics",
     "Helping you move freely with expert bone and joint care.",
   ],
   [
-    "⌁",
+    "✚",
     "Neurology",
     "Specialist support for the health of your brain and nerves.",
   ],
-  ["♧", "Pediatrics", "Gentle, growing-up care for your little ones."],
-  ["◌", "Gynecology", "Thoughtful care for every stage of women’s health."],
-  ["＋", "General medicine", "Trusted everyday care for the whole family."],
+  ["✚", "Pediatrics", "Gentle, growing-up care for your little ones."],
+  ["✚", "Gynecology", "Thoughtful care for every stage of women’s health."],
+  ["✚", "General medicine", "Trusted everyday care for the whole family."],
 ];
 
 const facilities = [
   [
-    "▣",
+    "⌬",
     "Advanced diagnostics",
     "Clear answers with modern imaging and lab technology.",
   ],
   [
-    "▤",
+    "⌬",
     "Intensive care unit",
     "Round-the-clock monitoring when care needs to be closer.",
   ],
   ["⌬", "Pharmacy", "Convenient, expert medication support under one roof."],
-  ["◫", "Private rooms", "Quiet, comfortable spaces designed for healing."],
+  ["⌬", "Private rooms", "Quiet, comfortable spaces designed for healing."],
   [
-    "▥",
+    "⌬",
     "Operation theatre",
     "Safe, precise surgical care from an experienced team.",
   ],
   [
-    "⊙",
+    "⌬",
     "24/7 ambulance",
     "Rapid response and dependable transport when it matters.",
   ],
