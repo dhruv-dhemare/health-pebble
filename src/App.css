@@ -2128,68 +2128,83 @@ textarea:focus {
     display: block;
   }
 
-  .departments-section .department-card {
-    position: sticky;
-    top: 10.5rem;
-    min-height: 15rem;
-    margin-bottom: 1rem;
-    transition:
-      opacity 0.25s ease,
-      transform 0.25s ease;
-  }
-
   .facilities-section .facility-grid {
     display: block;
   }
 
+  /* One continuous strip: no individual pinning, scaling or state switching. */
+  .departments-section .department-card,
   .facilities-section .facility-card {
-    position: sticky;
-    top: 10.5rem;
+    position: relative;
+    top: auto;
     min-height: 15rem;
-    margin-bottom: 1rem;
-    border-right: 0;
-    transition:
-      opacity 0.25s ease,
-      transform 0.25s ease;
-  }
-
-  .departments-section .department-card.is-active {
-    z-index: 3;
+    margin: 0 0 1rem;
+    padding: 1.5rem;
+    border: 1px solid var(--line);
+    border-radius: 0.75rem;
+    background: #fff;
+    box-shadow: 0 0.375rem 1rem rgba(31, 92, 107, 0.06);
     opacity: 1;
-    transform: scale(1);
+    transform: none;
+    transition: none;
   }
 
-  .departments-section .department-card.is-next {
-    z-index: 2;
-    opacity: 0.38;
-    transform: scale(0.97);
+  .departments-section .department-card:hover {
+    transform: none;
   }
 
-  .departments-section .department-card.is-passed,
-  .departments-section .department-card.is-hidden {
-    z-index: 1;
-    opacity: 0;
-    transform: scale(0.94);
-    pointer-events: none;
+  .departments-section .section-heading,
+  .facilities-section .section-heading {
+    top: var(--header-height, 4.75rem);
+    border: 0;
+    box-shadow: none;
+    background: #fff;
   }
 
-  .facilities-section .facility-card.is-active {
-    z-index: 3;
-    opacity: 1;
-    transform: scale(1);
+  .departments-section .section-heading::before,
+  .departments-section .section-heading::after,
+  .facilities-section .section-heading::before,
+  .facilities-section .section-heading::after {
+    background: #fff;
   }
 
-  .facilities-section .facility-card.is-next {
-    z-index: 2;
-    opacity: 0.38;
-    transform: scale(0.97);
+  .departments-section .department-grid,
+  .facilities-section .facility-grid {
+    padding: var(--strip-inset, 5rem) 0.25rem 0;
+    /* The entire strip passes through a single soft upper edge. */
+    -webkit-mask-image: linear-gradient(to bottom,
+      transparent var(--fade-start, 0px), #000 var(--fade-end, 0px));
+    mask-image: linear-gradient(to bottom,
+      transparent var(--fade-start, 0px), #000 var(--fade-end, 0px));
+    clip-path: inset(var(--fade-start, 0px) -1rem 0);
   }
 
-  .facilities-section .facility-card.is-passed,
-  .facilities-section .facility-card.is-hidden {
-    z-index: 1;
-    opacity: 0;
-    transform: scale(0.94);
-    pointer-events: none;
+  .departments-section,
+  .facilities-section {
+    padding-bottom: max(8rem, 30svh);
+  }
+
+  /* Keyboard focus must remain visible even after a card leaves the window. */
+  .departments-section .department-grid:focus-within {
+    -webkit-mask-image: none;
+    mask-image: none;
+    clip-path: none;
+  }
+}
+
+@media (max-width: 40rem) and (prefers-reduced-motion: reduce),
+       (max-width: 40rem) and (max-height: 36rem) {
+  .departments-section .section-heading,
+  .facilities-section .section-heading {
+    position: relative;
+    top: auto;
+  }
+
+  .departments-section .department-grid,
+  .facilities-section .facility-grid {
+    padding-top: 1rem;
+    -webkit-mask-image: none;
+    mask-image: none;
+    clip-path: none;
   }
 }

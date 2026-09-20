@@ -64,9 +64,6 @@ const testimonials = [
 function App() {
   const [showIntro, setShowIntro] = useState(true);
   const [submitted, setSubmitted] = useState(false);
-  const [activeDepartment, setActiveDepartment] = useState(0);
-  const [activeFacility, setActiveFacility] = useState(0);
-  const [scrollDirection, setScrollDirection] = useState("down");
 
   useEffect(() => {
     const introTimer = window.setTimeout(() => setShowIntro(false), 2600);
@@ -74,42 +71,63 @@ function App() {
   }, []);
 
   useEffect(() => {
-    const previousScrollY = { current: window.scrollY };
+    const mobile = window.matchMedia("(max-width: 40rem)");
+    const header = document.querySelector(".site-header");
+    const journeys = [...document.querySelectorAll(
+      ".departments-section, .facilities-section",
+    )].map((section) => ({
+      section,
+      heading: section.querySelector(".section-heading"),
+      strip: section.querySelector(".department-grid, .facility-grid"),
+    }));
+    let frame = 0;
 
-    const updateActiveDepartment = () => {
-      if (window.innerWidth > 640) return;
-
-      const currentScrollY = window.scrollY;
-      if (currentScrollY !== previousScrollY.current) {
-        setScrollDirection(currentScrollY > previousScrollY.current ? "down" : "up");
-        previousScrollY.current = currentScrollY;
-      }
-
-      const focusPoint = window.innerHeight * 0.48;
-      const updateActiveCard = (selector, setActiveCard) => {
-        const cards = [...document.querySelectorAll(selector)];
-        let focusedCard = -1;
-        cards.forEach((card, index) => {
-          const { top, bottom } = card.getBoundingClientRect();
-          if (top <= focusPoint && bottom > focusPoint) focusedCard = index;
-        });
-
-        if (focusedCard >= 0) setActiveCard(focusedCard);
-      };
-
-      updateActiveCard(".department-card", setActiveDepartment);
-      updateActiveCard(".facility-card", setActiveFacility);
+    // Only the viewing window changes. Cards remain in normal document flow,
+    // so their spacing and velocity are identical in both scroll directions.
+    const updateWindow = () => {
+      frame = 0;
+      if (!mobile.matches) return;
+      const headerHeight = header.getBoundingClientRect().height;
+      const measurements = journeys.map(({ section, heading, strip }) => {
+        const headingHeight = heading.getBoundingClientRect().height;
+        const stripTop = strip.getBoundingClientRect().top;
+        const cardHeight = strip.firstElementChild.getBoundingClientRect().height;
+        const clearTop = headerHeight + headingHeight + 24;
+        const fade = 56;
+        // Centre the readable card on the screen, moving the window down only
+        // when necessary to keep it safely clear of the pinned heading.
+        const readableTop = Math.max(clearTop + fade, (window.innerHeight - cardHeight) / 2);
+        return { section, strip, inset: readableTop - headerHeight - headingHeight,
+          start: Math.max(0, readableTop - fade - stripTop),
+          end: Math.max(0, readableTop - stripTop) };
+      });
+      measurements.forEach(({ section, strip, inset, start, end }) => {
+        section.style.setProperty("--header-height", `${headerHeight}px`);
+        strip.style.setProperty("--strip-inset", `${inset}px`);
+        strip.style.setProperty("--fade-start", `${start}px`);
+        strip.style.setProperty("--fade-end", `${end}px`);
+      });
     };
-
-    updateActiveDepartment();
-    window.addEventListener("scroll", updateActiveDepartment, {
-      passive: true,
+    const schedule = () => {
+      if (!frame) frame = window.requestAnimationFrame(updateWindow);
+    };
+    const observer = new ResizeObserver(schedule);
+    observer.observe(header);
+    journeys.forEach(({ heading, strip }) => {
+      observer.observe(heading);
+      observer.observe(strip);
     });
-    window.addEventListener("resize", updateActiveDepartment);
+    updateWindow();
+    window.addEventListener("scroll", schedule, { passive: true });
+    window.addEventListener("resize", schedule);
+    mobile.addEventListener("change", schedule);
 
     return () => {
-      window.removeEventListener("scroll", updateActiveDepartment);
-      window.removeEventListener("resize", updateActiveDepartment);
+      window.cancelAnimationFrame(frame);
+      observer.disconnect();
+      window.removeEventListener("scroll", schedule);
+      window.removeEventListener("resize", schedule);
+      mobile.removeEventListener("change", schedule);
     };
   }, []);
 
@@ -254,7 +272,7 @@ function App() {
               <span /> Our expertise
             </p>
             <h2 className="department-heading">
-              Specialists for
+              Specialists for{" "}
               <br />
               <em>what matters.</em>
             </h2>
@@ -264,28 +282,13 @@ function App() {
         <div className="department-grid">
           {departments.map(([icon, name, description], index) => (
             <article
-              className={`department-card ${
-                index === activeDepartment
-                  ? "is-active"
-                  : index ===
-                      activeDepartment + (scrollDirection === "up" ? -1 : 1)
-                    ? "is-next"
-                    : scrollDirection === "down"
-                      ? index < activeDepartment
-                        ? "is-passed"
-                        : "is-hidden"
-                      : index > activeDepartment
-                      ? "is-passed"
-                      : "is-hidden"
-              }`}
+              className="department-card"
               key={name}
             >
               <span className="card-icon">{icon}</span>
               <span className="card-index">
                 0
-                {departments.indexOf(
-                  departments.find((department) => department[1] === name),
-                ) + 1}
+                {index + 1}
               </span>
               <h3>{name}</h3>
               <p>{description}</p>
@@ -443,29 +446,16 @@ function App() {
               <span /> A better environment for healing
             </p>
             <h2>
-              Everything you need,
+              Everything you need,{" "}
               <br />
               <em>close at hand.</em>
             </h2>
           </div>
         </div>
         <div className="facility-grid">
-          {facilities.map(([icon, name, description], index) => (
+          {facilities.map(([icon, name, description]) => (
             <article
-              className={`facility-card ${
-                index === activeFacility
-                  ? "is-active"
-                  : index ===
-                      activeFacility + (scrollDirection === "up" ? -1 : 1)
-                    ? "is-next"
-                    : scrollDirection === "down"
-                      ? index < activeFacility
-                        ? "is-passed"
-                        : "is-hidden"
-                      : index > activeFacility
-                      ? "is-passed"
-                      : "is-hidden"
-              }`}
+              className="facility-card"
               key={name}
             >
               <span className="card-icon">{icon}</span>
